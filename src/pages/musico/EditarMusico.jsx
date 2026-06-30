@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
-const API = 'http://localhost:3000'
+const API = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 const MORADO = '#7C3AED'
 const MORADO_BG = '#2D1B69'
 const CARD = '#1A1A1A'

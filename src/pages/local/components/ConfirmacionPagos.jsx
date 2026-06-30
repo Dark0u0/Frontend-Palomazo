@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
-const API = 'http://localhost:3000'
+const API = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 const MORADO = '#7C3AED'
 const CARD = '#1A1A1A'
 const BORDE = '#2A2A2A'
