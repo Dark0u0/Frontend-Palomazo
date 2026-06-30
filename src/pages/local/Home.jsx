@@ -1,0 +1,106 @@
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import { s } from './styles'
+import Sidebar from './components/Sidebar'
+import HomeLocal from './components/HomeLocal'
+import BuscarMusicos from './components/BuscarMusicos'
+import MiLocal from './components/MiLocal'
+import MiCuenta from '../../components/MiCuenta'
+import ConfirmacionPagos from './components/ConfirmacionPagos'
+
+const API = 'http://localhost:3000'
+
+export default function Home() {
+  const navigate = useNavigate()
+  const usuario = JSON.parse(localStorage.getItem('usuario') || '{}')
+  const perfil = usuario.perfil || {}
+  const [tab, setTab] = useState('dashboard')
+  const [musicos, setMusicos] = useState([])
+  const [busqueda, setBusqueda] = useState('')
+  const [pagos, setPagos] = useState([])
+
+  useEffect(() => {
+    if (tab === 'musicos') {
+      axios.get(`${API}/musicos`)
+        .then(res => setMusicos(res.data))
+        .catch(console.error)
+    }
+    if (tab === 'dashboard') {
+      axios.get(`${API}/pagos/local/${perfil.id}`)
+        .then(res => setPagos(res.data.map(p => ({
+          id: p.id,
+          artista: p.solicitud.musico.nombreArtistico,
+          fecha: new Date(p.solicitud.fecha).toLocaleDateString('es-MX'),
+          hora: p.solicitud.horaInicio,
+          monto: parseFloat(p.monto),
+          estado: p.estado
+        }))))
+        .catch(console.error)
+    }
+  }, [tab])
+
+  const colorEstado = (estado) => {
+    if (estado === 'liberado') return '#22C55E'
+    if (estado === 'parcial') return '#F59E0B'
+    if (estado === 'cancelado') return '#EF4444'
+    return '#A855F7'
+  }
+
+  const liberarPago = async (id) => {
+    await axios.put(`${API}/pagos/${id}/liberar`)
+    setPagos(pagos.map(p => p.id === id ? { ...p, estado: 'liberado' } : p))
+  }
+  const cancelarPago = async (id) => {
+    await axios.put(`${API}/pagos/${id}/cancelar`)
+    setPagos(pagos.map(p => p.id === id ? { ...p, estado: 'cancelado' } : p))
+  }
+  const pagosPendientes = pagos.filter(p => p.estado !== 'liberado' && p.estado !== 'cancelado')
+
+  const estrellas = (n) => {
+    if (!n) return '☆☆☆☆☆'
+    return '★'.repeat(Math.round(n)) + '☆'.repeat(5 - Math.round(n))
+  }
+
+  return (
+    <div style={s.container}>
+      <Sidebar
+        tab={tab}
+        setTab={setTab}
+        usuario={usuario}
+        perfil={perfil}
+        navigate={navigate}
+      />
+      <div style={s.contenido}>
+        {tab === 'dashboard' && (
+          <HomeLocal
+            usuario={usuario}
+            pagos={pagos}
+            pagosPendientes={pagosPendientes}
+            colorEstado={colorEstado}
+            liberarPago={liberarPago}
+            cancelarPago={cancelarPago}
+          />
+        )}
+        {tab === 'musicos' && (
+          <BuscarMusicos
+            busqueda={busqueda}
+            setBusqueda={setBusqueda}
+            musicos={musicos}
+            estrellas={estrellas}
+            navigate={navigate}
+          />
+        )}
+        {tab === 'milocal' && (
+          <MiLocal perfil={perfil} navigate={navigate}/>
+        )}
+        {tab === 'cuenta' && (
+          <MiCuenta usuario={usuario} navigate={navigate}/>
+        )}
+        {tab === 'pagos' && (
+          <ConfirmacionPagos localId={perfil.id}/>
+        )}
+      </div>
+    </div>
+  )
+}

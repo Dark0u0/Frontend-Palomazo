@@ -1,0 +1,40 @@
+export const MORADO = '#7C3AED'
+export const MORADO_BG = '#2D1B69'
+export const CARD = '#1A1A1A'
+export const BORDE = '#2A2A2A'
+
+export const s = {
+  container: { display: 'flex', minHeight: '100vh', backgroundColor: '#0F0F0F' },
+  sidebar: { width: 220, backgroundColor: '#111', padding: 16, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', borderRight: `1px solid ${BORDE}`, position: 'sticky', top: 0, height: '100vh' },
+  logo: { color: '#fff', fontSize: 18, fontWeight: 700, marginBottom: 24, marginTop: 8 },
+  seccionLabel: { color: '#555', fontSize: 10, marginBottom: 8, letterSpacing: 1 },
+  dividerNav: { height: 1, backgroundColor: BORDE, margin: '12px 0' },
+  navItem: { display: 'block', width: '100%', padding: '10px 12px', borderRadius: 8, marginBottom: 4, backgroundColor: 'transparent', border: 'none', color: '#999', fontSize: 14, textAlign: 'left', cursor: 'pointer' },
+  navActivo: { display: 'block', width: '100%', padding: '10px 12px', borderRadius: 8, marginBottom: 4, backgroundColor: MORADO, border: 'none', color: '#fff', fontSize: 14, fontWeight: 600, textAlign: 'left', cursor: 'pointer' },
+  userBox: { display: 'flex', alignItems: 'center', gap: 8, paddingTop: 16, borderTop: `1px solid ${BORDE}` },
+  avatar: { width: 32, height: 32, borderRadius: 16, backgroundColor: MORADO, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: 14, flexShrink: 0 },
+  userName: { color: '#fff', fontSize: 12, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
+  userSub: { color: '#666', fontSize: 11 },
+  btnCerrar: { marginLeft: 'auto', backgroundColor: 'transparent', border: 'none', color: '#666', cursor: 'pointer', fontSize: 14, flexShrink: 0 },
+  contenido: { flex: 1, padding: 32, overflowY: 'auto' },
+  bienvenida: { fontSize: 24, fontWeight: 700, color: '#fff' },
+  fecha: { color: '#999', fontSize: 14, marginBottom: 24, marginTop: 4 },
+  statsRow: { display: 'flex', gap: 16, marginBottom: 24 },
+  statCard: { flex: 1, backgroundColor: CARD, borderRadius: 12, padding: 20, border: `1px solid ${BORDE}` },
+  statLabel: { color: '#999', fontSize: 14 },
+  statNum: { color: '#fff', fontSize: 28, fontWeight: 700, marginTop: 4 },
+  secTitulo: { color: '#fff', fontSize: 18, fontWeight: 600, marginBottom: 16 },
+  tabla: { backgroundColor: CARD, borderRadius: 12, padding: 16, marginBottom: 24, border: `1px solid ${BORDE}` },
+  tablaHeader: { display: 'flex', paddingBottom: 12, marginBottom: 8, borderBottom: `1px solid ${BORDE}` },
+  th: { color: '#666', fontSize: 11, fontWeight: 600, letterSpacing: 0.5 },
+  tablaFila: { display: 'flex', alignItems: 'center', padding: '10px 0', borderBottom: `1px solid ${BORDE}` },
+  td: { color: '#ccc', fontSize: 13 },
+  card: { backgroundColor: CARD, borderRadius: 12, padding: 20, marginBottom: 24, border: `1px solid ${BORDE}` },
+  barraFondo: { height: 8, backgroundColor: '#2A2A2A', borderRadius: 4 },
+  barraRelleno: { height: 8, borderRadius: 4, transition: 'width 0.3s' },
+  perfilFoto: { width: 100, height: 100, borderRadius: 12, objectFit: 'cover', flexShrink: 0 },
+  perfilFotoVacia: { width: 100, height: 100, backgroundColor: '#2A2A2A', borderRadius: 12, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  generoRow: { display: 'flex', flexWrap: 'wrap', gap: 4 },
+  generoBadge: { backgroundColor: MORADO_BG, color: MORADO, fontSize: 11, padding: '3px 8px', borderRadius: 20 },
+  btnEditar: { backgroundColor: 'transparent', border: `1px solid ${MORADO}`, borderRadius: 8, padding: '12px 24px', color: MORADO, fontWeight: 600, cursor: 'pointer' },
+}
