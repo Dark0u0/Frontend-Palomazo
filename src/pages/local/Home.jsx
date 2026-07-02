@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import axios from '../../utils/axios'
 import { s } from './styles'
 import Sidebar from './components/Sidebar'
 import HomeLocal from './components/HomeLocal'
@@ -8,8 +8,6 @@ import BuscarMusicos from './components/BuscarMusicos'
 import MiLocal from './components/MiLocal'
 import MiCuenta from '../../components/MiCuenta'
 import ConfirmacionPagos from './components/ConfirmacionPagos'
-
-const API = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 export default function Home() {
   const navigate = useNavigate()
@@ -22,12 +20,12 @@ export default function Home() {
 
   useEffect(() => {
     if (tab === 'musicos') {
-      axios.get(`${API}/musicos`)
+      axios.get('/musicos')
         .then(res => setMusicos(res.data))
         .catch(console.error)
     }
     if (tab === 'dashboard') {
-      axios.get(`${API}/pagos/local/${perfil.id}`)
+      axios.get(`/pagos/local/${perfil.id}`)
         .then(res => setPagos(res.data.map(p => ({
           id: p.id,
           artista: p.solicitud.musico.nombreArtistico,
@@ -48,14 +46,27 @@ export default function Home() {
   }
 
   const liberarPago = async (id) => {
-    await axios.put(`${API}/pagos/${id}/liberar`)
+    await axios.put(`/pagos/${id}/liberar`)
     setPagos(pagos.map(p => p.id === id ? { ...p, estado: 'liberado' } : p))
   }
+
   const cancelarPago = async (id) => {
-    await axios.put(`${API}/pagos/${id}/cancelar`)
+    await axios.put(`/pagos/${id}/cancelar`)
     setPagos(pagos.map(p => p.id === id ? { ...p, estado: 'cancelado' } : p))
   }
+
   const pagosPendientes = pagos.filter(p => p.estado !== 'liberado' && p.estado !== 'cancelado')
+
+  const cerrarSesion = async () => {
+    try {
+      const usuarioGuardado = JSON.parse(localStorage.getItem('usuario') || '{}')
+      await axios.post('/auth/logout', { id: usuarioGuardado.id })
+    } catch (e) {
+      // si falla, igual cerramos sesión localmente
+    }
+    localStorage.clear()
+    navigate('/login')
+  }
 
   const estrellas = (n) => {
     if (!n) return '☆☆☆☆☆'
@@ -70,6 +81,7 @@ export default function Home() {
         usuario={usuario}
         perfil={perfil}
         navigate={navigate}
+        cerrarSesion={cerrarSesion}
       />
       <div style={s.contenido}>
         {tab === 'dashboard' && (

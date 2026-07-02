@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import axios from '../../../utils/axios'
 import { s } from '../styles'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:3000'

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import axios from '../../utils/axios'
 import { s } from './styles'
 import Sidebar from './components/Sidebar'
 import HomeMusico from './components/HomeMusico'
@@ -9,8 +9,6 @@ import MisResenas from './components/MisResenas'
 import MiBanda from './components/MiBanda'
 import MiCuenta from '../../components/MiCuenta'
 import Solicitudes from './components/Solicitudes'
-
-const API = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 export default function Home() {
   const navigate = useNavigate()
@@ -21,7 +19,7 @@ export default function Home() {
 
   const cargarSolicitudes = () => {
     if (!perfil.id) return
-    axios.get(`${API}/solicitudes/musico/${perfil.id}`)
+    axios.get(`/solicitudes/musico/${perfil.id}`)
       .then(res => setSolicitudes(res.data))
       .catch(console.error)
   }
@@ -42,15 +40,24 @@ export default function Home() {
   }
 
   const estrellas = (n) => '★'.repeat(n) + '☆'.repeat(5 - n)
-  const cerrarSesion = () => { localStorage.clear(); navigate('/login') }
+
+  const cerrarSesion = async () => {
+    try {
+      const usuarioGuardado = JSON.parse(localStorage.getItem('usuario') || '{}')
+      await axios.post('/auth/logout', { id: usuarioGuardado.id })
+    } catch (e) {
+      // si falla, igual cerramos sesión localmente
+    }
+    localStorage.clear()
+    navigate('/login')
+  }
+
   const generos = Array.isArray(perfil.generos) ? perfil.generos : []
 
   const showsConPago = solicitudes.filter(s => s.pago && (s.pago.estado === 'parcial' || s.pago.estado === 'liberado'))
   const historial = solicitudes.filter(s => s.pago?.estado === 'liberado')
   const pendientes = solicitudes.filter(s => s.estado === 'pendiente')
 
-  // Ganancias reales del músico: SIEMPRE su montoMusico (sin comisión de Palomazo),
-  // sin importar que el escrow internamente maneje montoTotal (musico + comisión).
   const ahora = new Date()
   const gananciasMes = solicitudes
     .filter(s => s.pago?.estado === 'liberado' && new Date(s.pago.fechaPago).getMonth() === ahora.getMonth())
