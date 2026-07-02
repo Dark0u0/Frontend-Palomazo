@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import axios from '../../utils/axios'
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 const MORADO = '#7C3AED'
 const CARD = '#0D1421'
 const CARD_HEADER = '#1A2332'
@@ -13,103 +12,137 @@ export default function PerfilMusico() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [musico, setMusico] = useState(null)
+  const [resenas, setResenas] = useState([])
+  const [verResenas, setVerResenas] = useState(false)
   const [cargando, setCargando] = useState(true)
 
   useEffect(() => {
-    axios.get(`${API}/musicos/${id}`)
+    axios.get(`/musicos/${id}`)
       .then(res => { setMusico(res.data); setCargando(false) })
       .catch(() => setCargando(false))
+    axios.get(`/resenas/musico/${id}`)
+      .then(res => setResenas(res.data))
+      .catch(console.error)
   }, [id])
 
-  if (cargando) return <div style={{ color: '#fff', textAlign: 'center', padding: 40 }}>Cargando...</div>
-  if (!musico) return <div style={{ color: '#fff', textAlign: 'center', padding: 40 }}>Músico no encontrado</div>
+  if (cargando) return <div style={{ color: '#fff', padding: 40 }}>Cargando...</div>
+  if (!musico) return <div style={{ color: '#fff', padding: 40 }}>Músico no encontrado</div>
+
+  const promedio = resenas.length
+    ? (resenas.reduce((acc, r) => acc + r.calificacion, 0) / resenas.length).toFixed(1)
+    : null
+
+  const estrellas = (n) => '★'.repeat(n) + '☆'.repeat(5 - n)
+
+  const tiempoRelativo = (fecha) => {
+    const diff = Date.now() - new Date(fecha).getTime()
+    const mins = Math.floor(diff / 60000)
+    const hrs = Math.floor(diff / 3600000)
+    const dias = Math.floor(diff / 86400000)
+    if (mins < 60) return `hace ${mins} minuto${mins !== 1 ? 's' : ''}`
+    if (hrs < 24) return `hace ${hrs} hora${hrs !== 1 ? 's' : ''}`
+    return `hace ${dias} día${dias !== 1 ? 's' : ''}`
+  }
 
   return (
-    <div style={s.wrapper}>
-      <div style={s.contenido}>
-        <button onClick={() => navigate(-1)} style={s.btnVolver}>← Volver</button>
+    <div style={st.wrapper}>
+      <div style={st.contenido}>
+        <button onClick={() => navigate(-1)} style={st.btnVolver}>← Volver</button>
 
         {/* Header */}
-        <div style={s.header}>
-          <div style={s.headerTop}>
+        <div style={st.header}>
+          <div style={st.headerTop}>
             {musico.foto
-              ? <img src={musico.foto} alt="foto" style={s.fotoCircular}/>
-              : <div style={s.fotoVacia}><span style={{ fontSize: 32 }}>🎵</span></div>
+              ? <img src={musico.foto} alt="foto" style={st.fotoCircular}/>
+              : <div style={st.fotoVacia}><span style={{ fontSize: 32 }}>🎵</span></div>
             }
             <div style={{ flex: 1 }}>
-              <h1 style={s.nombre}>{musico.nombreArtistico}</h1>
-              <p style={s.localidad}>{musico.localidad}</p>
+              <h1 style={st.nombre}>{musico.nombreArtistico}</h1>
+              <p style={st.localidad}>{musico.localidad}</p>
             </div>
-            <button style={s.btnSolicitud} onClick={() => navigate(`/solicitud/${musico.id}`)}>
+            <button style={st.btnSolicitud} onClick={() => navigate(`/solicitud/${musico.id}`)}>
               Enviar solicitud
             </button>
           </div>
         </div>
 
         {/* Stats */}
-        <div style={s.statsRow}>
-          <div style={s.statCard}>
-            <p style={s.statValor}>${parseFloat(musico.precioPorHora).toLocaleString()} MXN</p>
-            <p style={s.statLabel}>Precio por hora</p>
+        <div style={st.statsRow}>
+          <div style={st.statCard}>
+            <p style={st.statValor}>${parseFloat(musico.precioPorHora).toLocaleString()} MXN</p>
+            <p style={st.statLabel}>Precio por hora</p>
           </div>
-          <div style={s.statCard}>
-            <p style={s.statValor}>{musico.calificacion ? `${musico.calificacion}/5` : 'Sin calificar'}</p>
-            <p style={s.statLabel}>
-              Calificación {musico.resenas?.length > 0 ? `(${musico.resenas.length} reseñas)` : ''}
+          <div style={{ ...st.statCard, cursor: 'pointer' }} onClick={() => setVerResenas(!verResenas)}>
+            <p style={st.statValor}>{promedio ? `${promedio}/5` : 'Sin calificar'}</p>
+            <p style={st.statLabel}>
+              Calificación {resenas.length > 0 ? `(${resenas.length})` : ''} — <span style={{ color: MORADO }}>Ver reseñas</span>
             </p>
           </div>
         </div>
 
         {/* Géneros */}
-        <div style={s.generosRow}>
+        <div style={st.generosRow}>
           {(musico.generos || []).map((g, i) => (
-            <span key={i} style={s.generoBadge}>{g}</span>
+            <span key={i} style={st.generoBadge}>{g}</span>
           ))}
         </div>
 
         {/* Biografía */}
         {musico.biografia && (
           <>
-            <h2 style={s.secTitulo}>Acerca de mí</h2>
-            <p style={s.bio}>{musico.biografia}</p>
+            <h2 style={st.secTitulo}>Acerca de mí</h2>
+            <p style={st.bio}>{musico.biografia}</p>
           </>
         )}
 
         {/* Galería */}
-        <h2 style={s.secTitulo}>Galería</h2>
-        <div style={s.galeriaGrid}>
+        <h2 style={st.secTitulo}>Galería</h2>
+        <div style={st.galeriaGrid}>
           {[0, 1, 2].map(i => (
             musico.galeria?.[i]
-              ? <img key={i} src={musico.galeria[i]} alt={`galeria-${i}`} style={s.galeriaImg}/>
-              : <div key={i} style={s.galeriaVacia}/>
+              ? <img key={i} src={musico.galeria[i]} alt={`galeria-${i}`} style={st.galeriaImg}/>
+              : <div key={i} style={st.galeriaVacia}/>
           ))}
         </div>
 
         {/* Reseñas */}
-        {musico.resenas?.length > 0 && (
-          <>
-            <h2 style={s.secTitulo}>Reseñas</h2>
-            {musico.resenas.map(r => (
-              <div key={r.id} style={s.resenaCard}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <span style={{ color: '#fff', fontWeight: 600 }}>
-                    {r.local?.usuario?.nombre || 'Local'}
-                  </span>
-                  <span style={{ color: '#F59E0B' }}>
-                    {'★'.repeat(r.calificacion) + '☆'.repeat(5 - r.calificacion)}
-                  </span>
+        {verResenas && (
+          <div>
+            <h2 style={st.secTitulo}>Reseñas</h2>
+            {resenas.length === 0 ? (
+              <p style={{ color: '#666' }}>Sin reseñas todavía</p>
+            ) : (
+              resenas.map(r => (
+                <div key={r.id} style={st.resenaCard}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div style={{ display: 'flex', gap: 10 }}>
+                      {r.local?.foto
+                        ? <img src={r.local.foto} alt="local" style={st.resenaAvatar}/>
+                        : <div style={st.resenaAvatarVacio}>🏠</div>
+                      }
+                      <div>
+                        <p style={{ color: '#fff', fontWeight: 600, fontSize: 14, margin: 0 }}>
+                          {r.local?.nombreNegocio || 'Local'}
+                        </p>
+                        <p style={{ color: '#666', fontSize: 11, margin: '2px 0 0' }}>
+                          {tiempoRelativo(r.creadoEn)}
+                        </p>
+                      </div>
+                    </div>
+                    <span style={{ color: '#F59E0B', fontSize: 15 }}>{estrellas(r.calificacion)}</span>
+                  </div>
+                  {r.comentario && <p style={{ color: '#ccc', fontSize: 13, marginTop: 10, lineHeight: 1.5 }}>{r.comentario}</p>}
                 </div>
-                <p style={{ color: '#9CA3AF', fontSize: 14 }}>{r.comentario}</p>
-              </div>
-            ))}
-          </>
+              ))
+            )}
+          </div>
         )}
       </div>
     </div>
   )
 }
 
-const s = {
+const st = {
   wrapper: { minHeight: '100vh', backgroundColor: '#000', padding: '24px 16px' },
   contenido: { maxWidth: 820, margin: '0 auto' },
   btnVolver: { backgroundColor: 'transparent', border: 'none', color: '#999', cursor: 'pointer', fontSize: 14, marginBottom: 16 },
@@ -132,4 +165,6 @@ const s = {
   galeriaImg: { width: 180, height: 180, borderRadius: 12, objectFit: 'cover' },
   galeriaVacia: { width: 180, height: 180, borderRadius: 12, backgroundColor: CARD, border: `1px solid ${BORDE}` },
   resenaCard: { backgroundColor: CARD, borderRadius: 12, padding: 16, marginBottom: 12, border: `1px solid ${BORDE}` },
+  resenaAvatar: { width: 40, height: 40, borderRadius: '50%', objectFit: 'cover' },
+  resenaAvatarVacio: { width: 40, height: 40, borderRadius: '50%', backgroundColor: '#2A2A2A', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 },
 }

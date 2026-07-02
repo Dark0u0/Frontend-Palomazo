@@ -24,18 +24,22 @@ export default function Home() {
         .then(res => setMusicos(res.data))
         .catch(console.error)
     }
-    if (tab === 'dashboard') {
-      axios.get(`/pagos/local/${perfil.id}`)
-        .then(res => setPagos(res.data.map(p => ({
-          id: p.id,
-          artista: p.solicitud.musico.nombreArtistico,
-          fecha: new Date(p.solicitud.fecha).toLocaleDateString('es-MX'),
-          hora: p.solicitud.horaInicio,
-          monto: parseFloat(p.monto),
-          estado: p.estado
-        }))))
-        .catch(console.error)
-    }
+if (tab === 'dashboard') {
+  axios.get(`/pagos/local/${perfil.id}`)
+    .then(res => setPagos(res.data.map(p => ({
+      id: p.id,
+      artista: p.solicitud.musico.nombreArtistico,
+      musicoFoto: p.solicitud.musico.foto || null,
+      musicoId: p.solicitud.musicoId,
+      localId: p.solicitud.localId,
+      fecha: new Date(p.solicitud.fecha).toLocaleDateString('es-MX'),
+      hora: p.solicitud.horaInicio,
+      monto: parseFloat(p.monto),
+      estado: p.estado,
+      resenado: p.resenado
+    }))))
+    .catch(console.error)
+}
   }, [tab])
 
   const colorEstado = (estado) => {

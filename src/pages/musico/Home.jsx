@@ -92,7 +92,7 @@ export default function Home() {
           />
         )}
         {tab === 'resenas' && (
-          <MisResenas resenas={resenas} estrellas={estrellas} promedio="0.0"/>
+          <MisResenas musicoId={perfil.id}/>
         )}
         {tab === 'cuenta' && (
           <MiCuenta usuario={usuario} navigate={navigate}/>
