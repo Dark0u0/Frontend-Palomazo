@@ -2,7 +2,6 @@ import { useState } from 'react'
 import axios from '../../utils/axios'
 import { useNavigate, Link } from 'react-router-dom'
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 const MORADO = '#7C3AED'
 
 export default function Login() {
@@ -15,7 +14,7 @@ export default function Login() {
     e.preventDefault()
     setError('')
     try {
-      const { data } = await axios.post(`${API}/auth/login`, { email, password })
+      const { data } = await axios.post('/auth/login', { email, password })
       localStorage.setItem('token', data.token)
       localStorage.setItem('usuario', JSON.stringify(data))
       if (data.rol === 'musico') {
@@ -57,6 +56,9 @@ export default function Login() {
         </form>
 
         <p style={s.link}>
+          <Link to="/olvide-password" style={{ color: MORADO }}>¿Olvidaste tu contraseña?</Link>
+        </p>
+        <p style={s.link}>
           ¿No tienes cuenta?{' '}
           <Link to="/registro" style={{ color: MORADO }}>Regístrate</Link>
         </p>
@@ -74,5 +76,5 @@ const s = {
   form: { display: 'flex', flexDirection: 'column', gap: 16 },
   input: { backgroundColor: '#0F0F0F', border: '1px solid #333', borderRadius: 8, padding: '14px 16px', color: '#fff', fontSize: 16, width: '100%' },
   btn: { backgroundColor: MORADO, color: '#fff', border: 'none', borderRadius: 8, padding: '14px 16px', fontSize: 16, fontWeight: 600, marginTop: 8 },
-  link: { textAlign: 'center', marginTop: 24, color: '#666', fontSize: 14 }
+  link: { textAlign: 'center', marginTop: 16, color: '#666', fontSize: 14 },
 }

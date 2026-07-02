@@ -8,6 +8,8 @@ import EditarMusico from './pages/musico/EditarMusico'
 import PerfilMusico from './pages/musico/PerfilMusico'
 import EditarLocal from './pages/local/EditarLocal'
 import SolicitudMusico from './pages/local/SolicitudMusico'
+import OlvidePassword from './pages/auth/OlvidePassword'
+import ResetPassword from './pages/auth/ResetPassword'
 
 export default function App() {
   return (
@@ -22,6 +24,8 @@ export default function App() {
       <Route path="/editar/musico" element={<EditarMusico />} />
       <Route path="/musico/:id" element={<PerfilMusico />} />
       <Route path="/solicitud/:id" element={<SolicitudMusico />} />
+      <Route path="/olvide-password" element={<OlvidePassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
     </Routes>
   )
 }
