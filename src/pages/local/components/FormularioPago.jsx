@@ -6,15 +6,17 @@ import axios from '../../../utils/axios'
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
 
 const MORADO = '#7C3AED'
-const BORDE = '#2A2A2A'
+const BORDE = '#1F2937'
 
-function FormPago({ solicitudId, monto, musicoNombre, onExito, onCancelar }) {
+function FormPago({ solicitudId, monto, montoMusico, musicoNombre, onExito, onCancelar }) {
   const stripe = useStripe()
   const elements = useElements()
   const [procesando, setProcesando] = useState(false)
   const [error, setError] = useState('')
 
-  const anticipo = +(monto * 0.35).toFixed(2)
+  const anticipo = +(montoMusico * 0.35).toFixed(2)
+  const alLiberar = +(montoMusico - anticipo).toFixed(2)
+  const comision = +(monto - montoMusico).toFixed(2)
 
   const handlePago = async (e) => {
     e.preventDefault()
@@ -24,10 +26,8 @@ function FormPago({ solicitudId, monto, musicoNombre, onExito, onCancelar }) {
     setError('')
 
     try {
-      // 1. Pedir el clientSecret al backend
       const { data } = await axios.post('/stripe/crear-pago', { solicitudId })
 
-      // 2. Confirmar el pago con la tarjeta
       const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(
         data.clientSecret,
         {
@@ -44,7 +44,6 @@ function FormPago({ solicitudId, monto, musicoNombre, onExito, onCancelar }) {
       }
 
       if (paymentIntent.status === 'succeeded') {
-        // 3. Avisar al backend que el pago fue exitoso
         await axios.post('/stripe/confirmar-pago', {
           solicitudId,
           paymentIntentId: paymentIntent.id
@@ -61,14 +60,23 @@ function FormPago({ solicitudId, monto, musicoNombre, onExito, onCancelar }) {
   return (
     <form onSubmit={handlePago} style={s.form}>
       <div style={s.resumen}>
-        <p style={s.resumenTitulo}>Resumen del pago</p>
+        <p style={s.resumenTitulo}>RESUMEN DEL PAGO</p>
         <div style={s.resumenFila}>
           <span style={s.resumenLabel}>Músico</span>
           <span style={s.resumenValor}>{musicoNombre}</span>
         </div>
         <div style={s.resumenFila}>
-          <span style={s.resumenLabel}>Monto total</span>
-          <span style={s.resumenValor}>${monto.toLocaleString()} MXN</span>
+          <span style={s.resumenLabel}>Pago al músico</span>
+          <span style={s.resumenValor}>${montoMusico.toLocaleString()} MXN</span>
+        </div>
+        <div style={s.resumenFila}>
+          <span style={s.resumenLabel}>Comisión Palomazo (10%)</span>
+          <span style={s.resumenValor}>${comision.toLocaleString()} MXN</span>
+        </div>
+        <div style={{ height: 1, backgroundColor: BORDE, margin: '12px 0' }}/>
+        <div style={s.resumenFila}>
+          <span style={{ ...s.resumenLabel, color: '#fff', fontWeight: 700 }}>Total a pagar</span>
+          <span style={{ ...s.resumenValor, fontWeight: 700 }}>${monto.toLocaleString()} MXN</span>
         </div>
         <div style={{ height: 1, backgroundColor: BORDE, margin: '12px 0' }}/>
         <div style={s.resumenFila}>
@@ -77,7 +85,7 @@ function FormPago({ solicitudId, monto, musicoNombre, onExito, onCancelar }) {
         </div>
         <div style={s.resumenFila}>
           <span style={s.resumenLabel}>Al liberar (65%)</span>
-          <span style={s.resumenValor}>${(monto - anticipo).toLocaleString()} MXN</span>
+          <span style={s.resumenValor}>${alLiberar.toLocaleString()} MXN</span>
         </div>
       </div>
 
@@ -105,14 +113,14 @@ function FormPago({ solicitudId, monto, musicoNombre, onExito, onCancelar }) {
           Cancelar
         </button>
         <button type="submit" style={s.btnPagar} disabled={procesando || !stripe}>
-          {procesando ? 'Procesando...' : `Pagar $${anticipo.toLocaleString()} MXN`}
+          {procesando ? 'Procesando...' : `Pagar $${monto.toLocaleString()} MXN`}
         </button>
       </div>
     </form>
   )
 }
 
-export default function FormularioPago({ solicitudId, monto, musicoNombre, onExito, onCancelar }) {
+export default function FormularioPago({ solicitudId, monto, montoMusico, musicoNombre, onExito, onCancelar }) {
   return (
     <div style={s.overlay} onClick={onCancelar}>
       <div style={s.modal} onClick={e => e.stopPropagation()}>
@@ -121,6 +129,7 @@ export default function FormularioPago({ solicitudId, monto, musicoNombre, onExi
           <FormPago
             solicitudId={solicitudId}
             monto={monto}
+            montoMusico={montoMusico}
             musicoNombre={musicoNombre}
             onExito={onExito}
             onCancelar={onCancelar}
@@ -137,10 +146,10 @@ const s = {
   titulo: { color: '#fff', fontSize: 18, fontWeight: 700, marginBottom: 20 },
   form: { display: 'flex', flexDirection: 'column', gap: 16 },
   resumen: { backgroundColor: '#0F1117', borderRadius: 10, padding: 16 },
-  resumenTitulo: { color: '#9CA3AF', fontSize: 12, fontWeight: 600, marginBottom: 12, letterSpacing: 0.5 },
+  resumenTitulo: { color: '#9CA3AF', fontSize: 11, fontWeight: 600, marginBottom: 12, letterSpacing: 1 },
   resumenFila: { display: 'flex', justifyContent: 'space-between', marginBottom: 8 },
   resumenLabel: { color: '#9CA3AF', fontSize: 13 },
-  resumenValor: { color: '#fff', fontSize: 13, fontWeight: 600 },
+  resumenValor: { color: '#fff', fontSize: 13, fontWeight: 500 },
   label: { color: '#9CA3AF', fontSize: 13 },
   cardContainer: { backgroundColor: '#0F1117', border: '1px solid #2A2A2A', borderRadius: 8, padding: '14px 16px' },
   error: { backgroundColor: '#3B0000', border: '1px solid #7F1D1D', color: '#FCA5A5', padding: '10px 14px', borderRadius: 8, fontSize: 13 },

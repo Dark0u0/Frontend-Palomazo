@@ -84,6 +84,7 @@ export default function ConfirmacionPagos({ localId }) {
                   <button style={s.btnPagar} onClick={() => setPagoActivo({
                     solicitudId: sol.id,
                     monto: parseFloat(sol.montoTotal),
+                    montoMusico: parseFloat(sol.montoMusico),
                     musicoNombre: sol.musico.nombreArtistico
                   })}>
                     💳 Pagar
@@ -104,6 +105,7 @@ export default function ConfirmacionPagos({ localId }) {
         <FormularioPago
           solicitudId={pagoActivo.solicitudId}
           monto={pagoActivo.monto}
+          montoMusico={pagoActivo.montoMusico}
           musicoNombre={pagoActivo.musicoNombre}
           onExito={() => { setPagoActivo(null); cargar() }}
           onCancelar={() => setPagoActivo(null)}

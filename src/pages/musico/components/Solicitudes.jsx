@@ -84,9 +84,6 @@ export default function Solicitudes({ solicitudes, onVolver, onRespondida }) {
                   </div>
                 </div>
 
-                <p style={s.comisionTexto}>
-                  💼 El 10% del pago total (${parseFloat(sol.comisionApp).toLocaleString()} MXN) corresponde a la comisión de Palomazo
-                </p>
 
                 <p style={s.protegido}>🛡️ Protegido contra cancelaciones de último momento</p>
 
