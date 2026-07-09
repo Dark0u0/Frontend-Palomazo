@@ -10,22 +10,63 @@ import EditarLocal from './pages/local/EditarLocal'
 import SolicitudMusico from './pages/local/SolicitudMusico'
 import OlvidePassword from './pages/auth/OlvidePassword'
 import ResetPassword from './pages/auth/ResetPassword'
+import RutaProtegida from './components/RutaProtegida'
 
 export default function App() {
   return (
     <Routes>
-      <Route path="/editar/local" element={<EditarLocal />} />
-      <Route path="/" element={<Navigate to="/login" />} />
+      {/* Ruta raíz → redirige al login */}
+      <Route path="/" element={<Navigate to="/login" replace />} />
+
+      {/* Rutas públicas */}
       <Route path="/login" element={<Login />} />
       <Route path="/registro" element={<Registro />} />
-      <Route path="/dashboard/local" element={<DashboardLocal />} />
-      <Route path="/dashboard/musico" element={<DashboardMusico />} />
-      <Route path="/editar/perfil" element={<EditarPerfil />} />
-      <Route path="/editar/musico" element={<EditarMusico />} />
-      <Route path="/musico/:id" element={<PerfilMusico />} />
-      <Route path="/solicitud/:id" element={<SolicitudMusico />} />
       <Route path="/olvide-password" element={<OlvidePassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+
+      {/* Rutas privadas — solo músicos */}
+      <Route path="/dashboard/musico" element={
+        <RutaProtegida rolRequerido="musico">
+          <DashboardMusico />
+        </RutaProtegida>
+      } />
+      <Route path="/editar/musico" element={
+        <RutaProtegida rolRequerido="musico">
+          <EditarMusico />
+        </RutaProtegida>
+      } />
+
+      {/* Rutas privadas — solo locales */}
+      <Route path="/dashboard/local" element={
+        <RutaProtegida rolRequerido="local">
+          <DashboardLocal />
+        </RutaProtegida>
+      } />
+      <Route path="/editar/local" element={
+        <RutaProtegida rolRequerido="local">
+          <EditarLocal />
+        </RutaProtegida>
+      } />
+      <Route path="/solicitud/:id" element={
+        <RutaProtegida rolRequerido="local">
+          <SolicitudMusico />
+        </RutaProtegida>
+      } />
+
+      {/* Rutas privadas — cualquier rol */}
+      <Route path="/editar/perfil" element={
+        <RutaProtegida>
+          <EditarPerfil />
+        </RutaProtegida>
+      } />
+      <Route path="/musico/:id" element={
+        <RutaProtegida>
+          <PerfilMusico />
+        </RutaProtegida>
+      } />
+
+      {/* Cualquier ruta no encontrada → login */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   )
 }
