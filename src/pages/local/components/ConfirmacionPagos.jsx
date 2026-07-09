@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react'
 import axios from '../../../utils/axios'
+import FormularioPago from './FormularioPago'
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 const MORADO = '#7C3AED'
 const CARD = '#1A1A1A'
 const BORDE = '#2A2A2A'
 
 export default function ConfirmacionPagos({ localId }) {
   const [solicitudes, setSolicitudes] = useState([])
+  const [pagoActivo, setPagoActivo] = useState(null)
 
   const cargar = () => {
-    axios.get(`${API}/solicitudes/local/${localId}`)
+    axios.get(`/solicitudes/local/${localId}`)
       .then(res => setSolicitudes(res.data))
       .catch(console.error)
   }
@@ -20,15 +21,6 @@ export default function ConfirmacionPagos({ localId }) {
     const intervalo = setInterval(cargar, 8000)
     return () => clearInterval(intervalo)
   }, [localId])
-
-  const pagar = async (id) => {
-    try {
-      await axios.post(`${API}/solicitudes/${id}/pagar`)
-      cargar()
-    } catch (e) {
-      alert('Error al procesar el pago')
-    }
-  }
 
   const colorEstado = (estado) => {
     if (estado === 'aceptada') return '#22C55E'
@@ -47,13 +39,12 @@ export default function ConfirmacionPagos({ localId }) {
   const colorPago = (estado) => {
     if (estado === 'liberado') return '#22C55E'
     if (estado === 'cancelado') return '#EF4444'
-    return '#F59E0B' // parcial
+    return '#F59E0B'
   }
 
   const textoPago = (pago) => {
     if (pago.estado === 'liberado') return '✓ Pagado completo (100% liberado)'
     if (pago.estado === 'cancelado') return 'Cancelado'
-    // parcial: muestra el split real
     const anticipo = parseFloat(pago.montoLiberado)
     const restante = parseFloat(pago.montoRetenido)
     return `Anticipo pagado: $${anticipo.toLocaleString()} (35%) · Pendiente: $${restante.toLocaleString()} (65%)`
@@ -69,7 +60,9 @@ export default function ConfirmacionPagos({ localId }) {
           <div key={sol.id} style={s.card}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <p style={{ color: '#fff', fontWeight: 700, fontSize: 15, margin: 0 }}>{sol.musico.nombreArtistico}</p>
+                <p style={{ color: '#fff', fontWeight: 700, fontSize: 15, margin: 0 }}>
+                  {sol.musico.nombreArtistico}
+                </p>
                 <p style={{ color: '#999', fontSize: 13, margin: '4px 0' }}>
                   📅 {new Date(sol.fecha).toLocaleDateString('es-MX')} · {sol.horaInicio} - {sol.horaFin}
                 </p>
@@ -84,9 +77,17 @@ export default function ConfirmacionPagos({ localId }) {
                 <p style={{ color: '#fff', fontWeight: 700, fontSize: 16, margin: 0 }}>
                   ${parseFloat(sol.montoTotal).toLocaleString()} MXN
                 </p>
-                <p style={{ color: '#666', fontSize: 11 }}>incl. comisión ${parseFloat(sol.comisionApp).toLocaleString()}</p>
+                <p style={{ color: '#666', fontSize: 11 }}>
+                  incl. comisión ${parseFloat(sol.comisionApp).toLocaleString()}
+                </p>
                 {sol.estado === 'aceptada' && (
-                  <button style={s.btnPagar} onClick={() => pagar(sol.id)}>Pagar</button>
+                  <button style={s.btnPagar} onClick={() => setPagoActivo({
+                    solicitudId: sol.id,
+                    monto: parseFloat(sol.montoTotal),
+                    musicoNombre: sol.musico.nombreArtistico
+                  })}>
+                    💳 Pagar
+                  </button>
                 )}
                 {sol.pago && (
                   <p style={{ color: colorPago(sol.pago.estado), fontSize: 11, fontWeight: 600, marginTop: 6, maxWidth: 220 }}>
@@ -97,6 +98,16 @@ export default function ConfirmacionPagos({ localId }) {
             </div>
           </div>
         ))
+      )}
+
+      {pagoActivo && (
+        <FormularioPago
+          solicitudId={pagoActivo.solicitudId}
+          monto={pagoActivo.monto}
+          musicoNombre={pagoActivo.musicoNombre}
+          onExito={() => { setPagoActivo(null); cargar() }}
+          onCancelar={() => setPagoActivo(null)}
+        />
       )}
     </div>
   )
