@@ -60,6 +60,11 @@ const liberarPago = async (id) => {
 }
 
 const cancelarPago = async (id) => {
+  const confirmar = window.confirm(
+    'Al cancelar, el anticipo del 35% ya transferido al músico no es reembolsable. Solo se te devolverá el 65% restante. ¿Deseas continuar?'
+  )
+  if (!confirmar) return
+
   try {
     const { data } = await axios.put(`/pagos/${id}/cancelar`)
     setPagos(prev => prev.map(p => p.id === id ? { ...p, estado: data.estado } : p))

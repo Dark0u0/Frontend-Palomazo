@@ -44,7 +44,10 @@ export default function ConfirmacionPagos({ localId }) {
 
   const textoPago = (pago) => {
     if (pago.estado === 'liberado') return '✓ Pagado completo (100% liberado)'
-    if (pago.estado === 'cancelado') return 'Cancelado'
+    if (pago.estado === 'cancelado') {
+      const anticipo = parseFloat(pago.montoLiberado)
+      return `Cancelado · $${anticipo.toLocaleString()} (35%) no reembolsable · 65% restante reembolsado`
+    }
     const anticipo = parseFloat(pago.montoLiberado)
     const restante = parseFloat(pago.montoRetenido)
     return `Anticipo pagado: $${anticipo.toLocaleString()} (35%) · Pendiente: $${restante.toLocaleString()} (65%)`

@@ -106,12 +106,17 @@ export default function HomeLocal({ usuario, pagos, pagosPendientes, colorEstado
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
               <span style={{ color: '#fff', fontSize: 14 }}>{p.artista}</span>
               <span style={{ color: colorEstado(p.estado), fontSize: 12, fontWeight: 600 }}>
-               {p.estado === 'liberado' ? '100% liberado' : p.estado === 'parcial' ? '65% retenido' : p.estado === 'cancelado' ? 'Cancelado' : '100% retenido'}
+               {p.estado === 'liberado' ? '100% liberado' : p.estado === 'parcial' ? '65% retenido' : p.estado === 'cancelado' ? '65% reembolsado' : '100% retenido'}
               </span>
             </div>
             <div style={s.barraFondo}>
               <div style={{ ...s.barraRelleno, width: p.estado === 'liberado' ? '100%' : p.estado === 'parcial' ? '65%' : p.estado === 'cancelado' ? '0%' : '100%', backgroundColor: colorEstado(p.estado) }}/>
             </div>
+            {p.estado === 'cancelado' && (
+              <p style={{ color: '#666', fontSize: 11, marginTop: 4 }}>
+                El 35% de anticipo pagado al músico no es reembolsable.
+              </p>
+            )}
           </div>
         ))}
       </div>
