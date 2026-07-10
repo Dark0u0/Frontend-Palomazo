@@ -61,7 +61,7 @@ export default function Home() {
   const ahora = new Date()
   const gananciasMes = solicitudes
     .filter(s => s.pago?.estado === 'liberado' && new Date(s.pago.fechaPago).getMonth() === ahora.getMonth())
-    .reduce((acc, s) => acc + parseFloat(s.montoMusico), 0)
+    .reduce((acc, s) => acc + parseFloat(s.monto), 0)
 
   return (
     <div style={s.container}>

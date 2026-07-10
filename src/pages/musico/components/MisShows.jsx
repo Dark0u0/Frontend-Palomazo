@@ -22,7 +22,7 @@ export default function MisShows({ historial, colorEstado, pendientesCount, onVe
             </div>
             <p style={{ color: '#999', fontSize: 13, marginBottom: 4 }}>📍 {sol.local.ubicacion}</p>
             <p style={{ color: '#999', fontSize: 13, marginBottom: 4 }}>📅 {new Date(sol.fecha).toLocaleDateString('es-MX')} · 🕐 {sol.horaInicio}</p>
-            <p style={{ color: MORADO, fontWeight: 700, fontSize: 16 }}>${parseFloat(sol.montoMusico).toLocaleString()} MXN</p>
+            <p style={{ color: MORADO, fontWeight: 700, fontSize: 16 }}>${parseFloat(sol.monto).toLocaleString()} MXN</p>
           </div>
         ))
       )}

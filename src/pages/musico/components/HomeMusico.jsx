@@ -35,7 +35,7 @@ export default function HomeMusico({ usuario, perfil, showsConPago, gananciasMes
             <span style={{ ...s.td, flex: 2 }}>📍 {sol.local.ubicacion}</span>
             <span style={{ ...s.td, flex: 1.5 }}>{new Date(sol.fecha).toLocaleDateString('es-MX')}</span>
             <span style={{ ...s.td, flex: 1 }}>{sol.horaInicio}</span>
-            <span style={{ ...s.td, flex: 1 }}>${parseFloat(sol.montoMusico).toLocaleString()}</span>
+            <span style={{ ...s.td, flex: 1 }}>${parseFloat(sol.monto).toLocaleString()}</span>
             <span style={{ ...s.td, flex: 1.5, color: colorEstado(sol.pago.estado) }}>● {sol.pago.estado}</span>
           </div>
         ))}
@@ -49,7 +49,7 @@ export default function HomeMusico({ usuario, perfil, showsConPago, gananciasMes
         {showsConPago.map(sol => {
           const pct = sol.pago.estado === 'liberado'
             ? 0
-            : Math.round((parseFloat(sol.pago.montoRetenido) / parseFloat(sol.pago.monto)) * 100)
+            : Math.round((parseFloat(sol.pago.montoRetenido) / parseFloat(sol.pago.montoTotal)) * 100)
           return (
             <div key={sol.id} style={{ marginBottom: 16 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>

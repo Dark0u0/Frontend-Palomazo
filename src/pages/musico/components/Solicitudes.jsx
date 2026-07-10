@@ -39,7 +39,7 @@ export default function Solicitudes({ solicitudes, onVolver, onRespondida }) {
       ) : (
         <div style={s.grid}>
           {solicitudes.map(sol => {
-            const anticipo = +(parseFloat(sol.montoTotal) * 0.35).toFixed(2)
+            const anticipo = +(parseFloat(sol.monto) * 0.35).toFixed(2)
             return (
               <div key={sol.id} style={s.card}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -76,7 +76,7 @@ export default function Solicitudes({ solicitudes, onVolver, onRespondida }) {
                 <div style={s.totalBox}>
                   <div>
                     <p style={s.totalLabel}>Pago total acordado</p>
-                    <p style={s.totalValor}>${parseFloat(sol.montoTotal).toLocaleString()} MXN</p>
+                    <p style={s.totalValor}>${parseFloat(sol.monto).toLocaleString()} MXN</p>
                   </div>
                   <div>
                     <p style={s.totalLabel}>Anticipo escrow</p>

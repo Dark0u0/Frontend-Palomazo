@@ -49,15 +49,25 @@ if (tab === 'dashboard') {
     return '#A855F7'
   }
 
-  const liberarPago = async (id) => {
-    await axios.put(`/pagos/${id}/liberar`)
-    setPagos(pagos.map(p => p.id === id ? { ...p, estado: 'liberado' } : p))
+const liberarPago = async (id) => {
+  try {
+    const { data } = await axios.put(`/pagos/${id}/liberar`)
+    setPagos(prev => prev.map(p => p.id === id ? { ...p, estado: data.estado } : p))
+  } catch (e) {
+    console.error(e)
+    alert('No se pudo liberar el pago. Intenta de nuevo.')
   }
+}
 
-  const cancelarPago = async (id) => {
-    await axios.put(`/pagos/${id}/cancelar`)
-    setPagos(pagos.map(p => p.id === id ? { ...p, estado: 'cancelado' } : p))
+const cancelarPago = async (id) => {
+  try {
+    const { data } = await axios.put(`/pagos/${id}/cancelar`)
+    setPagos(prev => prev.map(p => p.id === id ? { ...p, estado: data.estado } : p))
+  } catch (e) {
+    console.error(e)
+    alert('No se pudo cancelar el pago. Intenta de nuevo.')
   }
+}
 
   const pagosPendientes = pagos.filter(p => p.estado !== 'liberado' && p.estado !== 'cancelado')
 
