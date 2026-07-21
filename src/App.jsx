@@ -8,8 +8,6 @@ import EditarMusico from './pages/musico/EditarMusico'
 import PerfilMusico from './pages/musico/PerfilMusico'
 import EditarLocal from './pages/local/EditarLocal'
 import SolicitudMusico from './pages/local/SolicitudMusico'
-import OlvidePassword from './pages/auth/OlvidePassword'
-import ResetPassword from './pages/auth/ResetPassword'
 import RutaProtegida from './components/RutaProtegida'
 
 export default function App() {
@@ -21,8 +19,6 @@ export default function App() {
       {/* Rutas públicas */}
       <Route path="/login" element={<Login />} />
       <Route path="/registro" element={<Registro />} />
-      <Route path="/olvide-password" element={<OlvidePassword />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
 
       {/* Rutas privadas — solo músicos */}
       <Route path="/dashboard/musico" element={
