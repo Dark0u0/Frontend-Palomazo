@@ -139,7 +139,7 @@ const s = {
   },
   panelDerecho: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#0D0D1A',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -152,12 +152,12 @@ const s = {
   titulo: {
     fontSize: 28,
     fontWeight: 700,
-    color: '#111',
+    color: '#fff',
     margin: '0 0 8px',
   },
   subtitulo: {
     fontSize: 14,
-    color: '#666',
+    color: '#9CA3AF',
     marginBottom: 32,
   },
   linkRegistro: {
@@ -166,9 +166,9 @@ const s = {
     textDecoration: 'underline',
   },
   error: {
-    backgroundColor: '#FEF2F2',
-    border: '1px solid #FECACA',
-    color: '#DC2626',
+    backgroundColor: '#3B0000',
+    border: '1px solid #7F1D1D',
+    color: '#FCA5A5',
     padding: '10px 14px',
     borderRadius: 8,
     marginBottom: 16,
@@ -184,12 +184,12 @@ const s = {
     flexDirection: 'column',
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: 'transparent',
     border: 'none',
-    borderBottom: '2px solid #E5E7EB',
+    borderBottom: '2px solid #2A2A2A',
     borderRadius: 0,
     padding: '14px 4px',
-    color: '#111',
+    color: '#fff',
     fontSize: 15,
     width: '100%',
     outline: 'none',
